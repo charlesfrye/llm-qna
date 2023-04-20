@@ -87,7 +87,6 @@ def add_to_document_db(all_pages_jsons):
 
 
 def annotate_endmatter(pages, min_pages=6):
-    ### replace this with an LLM call
     out, after_references = [], False
     for idx, page in enumerate(pages):
         content = page.page_content.lower()
