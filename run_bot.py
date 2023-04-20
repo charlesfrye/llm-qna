@@ -15,9 +15,7 @@ load_dotenv()
 MODAL_USER_NAME = os.environ["MODAL_USER_NAME"]
 BACKEND_URL = f"https://{MODAL_USER_NAME}--llm-qna-hook.modal.run"
 
-guild_ids = {
-    "dev": 1070516629328363591,
-}
+guild_ids = {"dev": 1070516629328363591}
 
 START, END = "\033[1;36m", "\033[0m"
 
@@ -33,11 +31,7 @@ async def runner(query, request_id=None):
     return json_content["answer"]
 
 
-def pretty_log(str):
-    print(f"{START}🤖: {str}{END}")
-
-
-def main(auth, guilds, dev=False):
+def main(auth, guilds):
     # Discord auth requires statement of "intents"
     #  we start with default behaviors
     intents = discord.Intents.default()
@@ -94,33 +88,20 @@ def main(auth, guilds, dev=False):
             await asyncio.sleep(0.25)
 
 
-    if dev:
-        @bot.slash_command()
-        async def health(ctx):
-            "Supports a Discord bot version of a liveness probe."
-            pretty_log(f"inside healthcheck")
-            await ctx.respond("200 more like 💯 mirite")
+    @bot.slash_command()
+    async def health(ctx):
+        "Supports a Discord bot version of a liveness probe."
+        pretty_log(f"inside healthcheck")
+        await ctx.respond("200 more like 💯 mirite")
 
     bot.run(auth)
 
 
-def make_argparser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--dev", action="store_true", help="Run in development mode.")
-
-    return parser
+def pretty_log(str):
+    print(f"{START}🤖: {str}{END}")
 
 
 if __name__ == "__main__":
-    args = make_argparser().parse_args()
-    if args.dev:
-        guilds = [guild_ids["dev"]]
-        auth = os.environ["DISCORD_AUTH_DEV"]
-    else:
-        guilds = [guild_ids["prod"]]
-        auth = os.environ["DISCORD_AUTH"]
-    if args.dev:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
-    main(auth=auth, guilds=guilds, dev=args.dev)
+    guilds = [guild_ids["dev"]]
+    auth = os.environ["DISCORD_AUTH_DEV"]
+    main(auth=auth, guilds=guilds)
