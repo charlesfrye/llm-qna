@@ -4,7 +4,7 @@ image = modal.Image.debian_slim(python_version="3.10").pip_install(
     "langchain~=0.0.98",
     "openai~=0.26.3",
     "pinecone-client",
-    "pymongo[srv]==3.11",
+    "pymongo[srv]",
     "tiktoken",
 )
 
@@ -12,8 +12,8 @@ stub = modal.Stub(
     name="llm-qna",
     image=image,
     secrets=[
-        modal.Secret.from_name("pinecone-api-key"),
-        modal.Secret.from_name("openai-api-key"),
+        modal.Secret.from_name("pinecone-api-key-personal"),
+        modal.Secret.from_name("openai-api-key-fsdl"),
         modal.Secret.from_name("mongodb"),
     ],
 )
@@ -120,7 +120,7 @@ def sync_vector_db_to_doc_db():
         index = pinecone.Index(PINECONE_INDEX)
         index.delete(delete_all=True)
         pretty_log("existing index wiped")
-    except pinecone.core.client.exceptions.NotFoundException:
+    except (pinecone.core.client.exceptions.NotFoundException, pinecone.core.exceptions.PineconeProtocolError):
         pretty_log("creating vector index")
         pinecone.create_index(name=PINECONE_INDEX, dimension=1536, metric="cosine", pod_type="p1.x1")
         pretty_log("vector index created")
