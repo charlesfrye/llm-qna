@@ -31,7 +31,7 @@ def qanda_langchain(query: str) -> str:
     from langchain.chains.qa_with_sources import load_qa_with_sources_chain
     from langchain.embeddings.openai import OpenAIEmbeddings
     from langchain.llms import OpenAI
-    from langchain.text_splitter import CharacterTextSplitter
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
     from langchain.vectorstores import Pinecone
     import openai
     import pinecone
